@@ -402,18 +402,39 @@ def main():
     with st.sidebar:
         st.header("Settings")
 
-        # API Key input
-        api_key = st.text_input(
-            "Anthropic API Key",
-            type="password",
-            placeholder="sk-ant-...",
-            help="Enter your Anthropic API key to use the agents"
-        )
+        # Check for API key in secrets first, then env, then manual input
+        api_key = None
 
-        if api_key:
-            st.success("API Key entered")
-        else:
-            st.warning("Please enter your API key to ask questions")
+        # Try Streamlit secrets first
+        try:
+            if "ANTHROPIC_API_KEY" in st.secrets:
+                api_key = st.secrets["ANTHROPIC_API_KEY"]
+                if api_key and api_key != "your-key-here":
+                    st.success("API Key loaded from secrets")
+                else:
+                    api_key = None
+        except Exception:
+            pass
+
+        # If no secrets, try environment variable
+        if not api_key:
+            api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+            if api_key:
+                st.success("API Key loaded from environment")
+
+        # If still no key, show manual input
+        if not api_key:
+            api_key = st.text_input(
+                "Anthropic API Key",
+                type="password",
+                placeholder="sk-ant-...",
+                help="Enter your Anthropic API key to use the agents"
+            )
+
+            if api_key:
+                st.success("API Key entered")
+            else:
+                st.warning("Please enter your API key to ask questions")
 
         st.divider()
 

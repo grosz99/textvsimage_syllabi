@@ -40,8 +40,9 @@ env/
 .DS_Store
 Thumbs.db
 
-# Streamlit
+# Streamlit secrets - DO NOT COMMIT
 .streamlit/secrets.toml
+.streamlit/secrets.*.toml
 
 # Temporary files
 *.tmp
